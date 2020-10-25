@@ -1,5 +1,8 @@
 package tk.ynvaser.quiz.model.quiz;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
