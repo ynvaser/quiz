@@ -1,9 +1,15 @@
 package tk.ynvaser.quiz.model.quiz;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@Setter
 public class Quiz {
+    private String name;
     private Map<String, Category> categories;
 
     public Quiz() {

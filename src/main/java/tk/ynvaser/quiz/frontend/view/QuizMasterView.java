@@ -4,11 +4,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.upload.Upload;
@@ -32,14 +30,11 @@ public class QuizMasterView extends VerticalLayout {
     }
 
     private void initVaadinLayout() {
-        getFileUploader();
-        getQuizSelector();
+        createFileUploader();
+        createQuizSelector();
     }
 
-    private void getQuizSelector() {
-        if (labelSelect != null) {
-            remove(labelSelect);
-        }
+    private void createQuizSelector() {
         labelSelect = new Select<>();
         labelSelect.setItems(quizService.getQuizes());
         labelSelect.setLabel("Elérhető kvízek");
@@ -47,7 +42,7 @@ public class QuizMasterView extends VerticalLayout {
         add(labelSelect);
     }
 
-    private void getFileUploader() {
+    private void createFileUploader() {
         MemoryBuffer buffer = new MemoryBuffer();
         Upload upload = new Upload(buffer);
         upload.setMaxFiles(1);
@@ -63,7 +58,7 @@ public class QuizMasterView extends VerticalLayout {
 
         upload.addFinishedListener(event -> {
             quizService.importQuiz(buffer.getInputStream());
-            getQuizSelector();
+            labelSelect.setItems(quizService.getQuizes()); 
         });
 
         add(upload, output);

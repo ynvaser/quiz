@@ -8,4 +8,5 @@ What you need to build this:
 - Gradle v6.7
 - Node v12.19.0
 - IntelliJ
+    - Lombok plugin
 	- You can use whatever IDE suits your fancy, but I may not be able to provide support if you use something else.
