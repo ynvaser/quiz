@@ -1,19 +1,19 @@
 package tk.ynvaser.quiz.persistence.entity;
 
-import tk.ynvaser.quiz.model.quiz.Quiz;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Entity
 public class QuizEntity {
     @Id
     private String name;
-    @OneToMany
-    private List<CategoryEntity> categories;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CategoryEntity> categories = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -31,10 +31,7 @@ public class QuizEntity {
         this.categories = categories;
     }
 
-    public static QuizEntity fromQuiz(Quiz quiz) {
-        QuizEntity quizEntity = new QuizEntity();
-        quizEntity.setName(quiz.getName());
-        quiz.getCategories().values().stream().map(category -> QuestionEntity.fromCategory(category)).collect(Collectors.toList());
-        quizEntity.setCategories(quiz.getCategories().values().stream().map());
+    public Optional<CategoryEntity> findCategoryByName(String name) {
+        return getCategories().stream().filter(categoryEntity -> name.equals(categoryEntity.getName())).findFirst();
     }
 }

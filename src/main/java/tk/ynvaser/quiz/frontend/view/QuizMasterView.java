@@ -14,17 +14,19 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.ynvaser.quiz.model.quiz.Quiz;
+import tk.ynvaser.quiz.service.CsvImporterService;
 import tk.ynvaser.quiz.service.QuizService;
 
 @Route
 public class QuizMasterView extends VerticalLayout {
-
+    private final CsvImporterService csvImporterService;
     private final QuizService quizService;
 
     private Select<Quiz> labelSelect;
 
     @Autowired
-    public QuizMasterView(QuizService quizService) {
+    public QuizMasterView(CsvImporterService csvImporterService, QuizService quizService) {
+        this.csvImporterService = csvImporterService;
         this.quizService = quizService;
         initVaadinLayout();
     }
@@ -57,7 +59,7 @@ public class QuizMasterView extends VerticalLayout {
         });
 
         upload.addFinishedListener(event -> {
-            quizService.importQuiz(buffer.getInputStream());
+            csvImporterService.importFromCsv(event.getFileName(), buffer.getInputStream());
             labelSelect.setItems(quizService.getQuizes()); 
         });
 

@@ -1,28 +1,23 @@
 package tk.ynvaser.quiz.model.quiz;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import tk.ynvaser.quiz.model.engine.Team;
+import tk.ynvaser.quiz.persistence.entity.QuestionEntity;
 
 @Getter
-@NoArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class Question {
-    private int points;
-    private String name;
-    private String text;
-    private String answerText;
+    private final int points;
+    private final String name;
+    private final String text;
+    private final String answerText;
     @Setter
     private Team takenBy;
 
-    @Builder
-    public static Question createQuestion(int points, String name, String text, String answerText) {
-        Question question = new Question();
-        question.points = points;
-        question.name = name;
-        question.text = text;
-        question.answerText = answerText;
-        return question;
+    public static Question fromEntity(QuestionEntity entity) {
+        return new Question(entity.getPoints(), entity.getName(), entity.getText(), entity.getAnswerText());
     }
 }
+
+

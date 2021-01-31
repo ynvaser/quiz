@@ -1,16 +1,13 @@
 package tk.ynvaser.quiz.service;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.ynvaser.quiz.model.quiz.Quiz;
-import tk.ynvaser.quiz.persistence.entity.QuizEntity;
 import tk.ynvaser.quiz.persistence.repository.QuizRepository;
-import tk.ynvaser.quiz.util.CsvImporter;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +17,10 @@ import java.util.List;
 public class QuizService {
     private final QuizRepository quizRepository;
 
-    public void importQuiz(InputStream inputStream) {
-        Quiz quiz = CsvImporter.importFromCsv(inputStream);
-        quizRepository.save()
+    @Transactional
+    public List<Quiz> getQuizes() {
+        List<Quiz> quizes = new ArrayList<>();
+        quizRepository.findAll().forEach(quizEntity -> quizes.add(Quiz.fromEntity(quizEntity)));
+        return quizes;
     }
 }

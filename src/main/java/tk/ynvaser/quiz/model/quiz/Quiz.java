@@ -1,26 +1,27 @@
 package tk.ynvaser.quiz.model.quiz;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import tk.ynvaser.quiz.persistence.entity.CategoryEntity;
+import tk.ynvaser.quiz.persistence.entity.QuizEntity;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
-@Setter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class Quiz {
-    private String name;
-    private Map<String, Category> categories;
+    private final String name;
+    private final Map<String, Category> categories;
 
-    public Quiz() {
-        categories = new HashMap<>();
-    }
-
-    public void addCategory(String name, Category category) {
-        categories.put(name, category);
-    }
-
-    public Category getCategoryByName(String name) {
-        return categories.get(name);
+    public static Quiz fromEntity(QuizEntity entity) {
+        Map<String, Category> categories = entity
+                .getCategories()
+                .stream()
+                .collect(Collectors.toMap(CategoryEntity::getName, Category::fromEntity));
+        return new Quiz(entity.getName(), categories);
     }
 }
