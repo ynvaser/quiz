@@ -20,12 +20,12 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CsvImporterService {
     public static final char DELIMITER = ';';
     private final QuizRepository quizRepository;
 
+    @Transactional
     public void importFromCsv(String name, InputStream inputStream) {
         try (InputStreamReader input = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             CSVParser csvParser = CSVFormat.newFormat(DELIMITER).withFirstRecordAsHeader().parse(input);
