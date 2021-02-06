@@ -18,14 +18,14 @@ import tk.ynvaser.quiz.service.CsvImporterService;
 import tk.ynvaser.quiz.service.QuizService;
 
 @Route
-public class QuizMasterView extends VerticalLayout {
+public class CSVUploaderDemo extends VerticalLayout {
     private final CsvImporterService csvImporterService;
     private final QuizService quizService;
 
     private Select<Quiz> labelSelect;
 
     @Autowired
-    public QuizMasterView(CsvImporterService csvImporterService, QuizService quizService) {
+    public CSVUploaderDemo(CsvImporterService csvImporterService, QuizService quizService) {
         this.csvImporterService = csvImporterService;
         this.quizService = quizService;
         initVaadinLayout();

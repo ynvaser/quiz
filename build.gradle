@@ -23,6 +23,7 @@ dependencies {
 	implementation 'com.vaadin:vaadin-spring-boot-starter'
 	implementation 'org.apache.commons:commons-csv:1.8'
 	implementation 'com.h2database:h2:1.4.200'
+	implementation "com.vaadin:vaadin-avatar-flow:1.0.1"
 	compileOnly 'org.projectlombok:lombok:1.18.16'
 	annotationProcessor 'org.projectlombok:lombok:1.18.16'
 
