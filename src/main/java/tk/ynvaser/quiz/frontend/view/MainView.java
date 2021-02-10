@@ -27,7 +27,7 @@ import java.util.Optional;
  * The main view is a top-level placeholder for other views.
  */
 @CssImport("./styles/views/main/main-view.css")
-@PWA(name = "My Project", shortName = "My Project", enableInstallPrompt = false)
+@PWA(name = "Gennyes Quiz App", shortName = "Gennyes", enableInstallPrompt = false)
 @JsModule("./styles/shared-styles.js")
 @Theme(value = Lumo.class, variant = Lumo.DARK)
 public class MainView extends AppLayout {
@@ -82,8 +82,10 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        return new Tab[]{createTab("Quiz Dashboard", QuizDashboardView.class),
-                createTab("Quiz (name)", QuiznameView.class), createTab("Quizmaster View", QuizmasterViewView.class)};
+        return new Tab[]{
+                //createTab("Quiz Dashboard", QuizDashboardView.class),
+                //createTab("Quiz (name)", QuizmasterViewView.class),
+                createTab("Quizmaster View", QuiznameView.class)};
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {

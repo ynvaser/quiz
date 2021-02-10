@@ -13,6 +13,7 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import tk.ynvaser.quiz.model.quiz.Category;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,25 +23,23 @@ import java.util.List;
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class QuiznameView extends Div implements AfterNavigationObserver {
 
-    Grid<Person> grid = new Grid<>();
+    Grid<Category> grid = new Grid<>();
 
     public QuiznameView() {
         addClassName("quizname-view");
         setSizeFull();
         grid.setHeight("100%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
-        grid.addComponentColumn(person -> createCard(person));
+        grid.addComponentColumn(this::createCard);
         add(grid);
     }
 
-    private HorizontalLayout createCard(Person person) {
+    private HorizontalLayout createCard(Category category) {
         HorizontalLayout card = new HorizontalLayout();
         card.addClassName("card");
         card.setSpacing(false);
         card.getThemeList().add("spacing-s");
 
-        Image image = new Image();
-        image.setSrc(person.getImage());
         VerticalLayout description = new VerticalLayout();
         description.addClassName("description");
         description.setSpacing(false);
@@ -51,13 +50,11 @@ public class QuiznameView extends Div implements AfterNavigationObserver {
         header.setSpacing(false);
         header.getThemeList().add("spacing-s");
 
-        Span name = new Span(person.getName());
+        Span name = new Span(category.getName());
         name.addClassName("name");
-        Span date = new Span(person.getDate());
-        date.addClassName("date");
-        header.add(name, date);
+        header.add(name);
 
-        Span post = new Span(person.getPost());
+        Span post = new Span(category.getQuestions());
         post.addClassName("post");
 
         HorizontalLayout actions = new HorizontalLayout();
@@ -66,13 +63,13 @@ public class QuiznameView extends Div implements AfterNavigationObserver {
         actions.getThemeList().add("spacing-s");
 
         IronIcon likeIcon = new IronIcon("vaadin", "heart");
-        Span likes = new Span(person.getLikes());
+        Span likes = new Span(category.getLikes());
         likes.addClassName("likes");
         IronIcon commentIcon = new IronIcon("vaadin", "comment");
-        Span comments = new Span(person.getComments());
+        Span comments = new Span(category.getComments());
         comments.addClassName("comments");
         IronIcon shareIcon = new IronIcon("vaadin", "connect");
-        Span shares = new Span(person.getShares());
+        Span shares = new Span(category.getShares());
         shares.addClassName("shares");
 
         actions.add(likeIcon, likes, commentIcon, comments, shareIcon, shares);
@@ -86,7 +83,7 @@ public class QuiznameView extends Div implements AfterNavigationObserver {
     public void afterNavigation(AfterNavigationEvent event) {
 
         // Set some data when this view is displayed.
-        List<Person> persons = Arrays.asList( //
+        List<Category> categories = Arrays.asList( //
                 createPerson("https://randomuser.me/api/portraits/men/42.jpg", "John Smith", "May 8",
                         "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document without relying on meaningful content (also called greeking).",
                         "1K", "500", "20"),
@@ -135,7 +132,7 @@ public class QuiznameView extends Div implements AfterNavigationObserver {
 
         );
 
-        grid.setItems(persons);
+        grid.setItems(categories);
     }
 
     private static Person createPerson(String image, String name, String date, String post, String likes,
