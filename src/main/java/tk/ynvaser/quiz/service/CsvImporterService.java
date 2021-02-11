@@ -25,8 +25,11 @@ public class CsvImporterService {
     public static final char DELIMITER = ';';
     private final QuizRepository quizRepository;
 
+
     @Transactional
     public void importFromCsv(String name, InputStream inputStream) {
+        //TODO validate UTF format
+        //TODO validate Header compatibility
         try (InputStreamReader input = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             CSVParser csvParser = CSVFormat.newFormat(DELIMITER).withFirstRecordAsHeader().parse(input);
             QuizEntity quizEntity = new QuizEntity();
