@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
@@ -11,16 +12,19 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.ynvaser.quiz.model.quiz.Quiz;
 import tk.ynvaser.quiz.service.CsvImporterService;
 import tk.ynvaser.quiz.service.QuizService;
 
-@Route
+@Route(value = "quizview", layout = MainView.class)
+@PageTitle("Quiz (name)")
+@CssImport("./styles/views/quizname/quizname-view.css")
 public class CSVUploaderDemo extends VerticalLayout {
-    private final CsvImporterService csvImporterService;
-    private final QuizService quizService;
+    private final transient CsvImporterService csvImporterService;
+    private final transient QuizService quizService;
 
     private Select<Quiz> labelSelect;
 
@@ -60,7 +64,7 @@ public class CSVUploaderDemo extends VerticalLayout {
 
         upload.addFinishedListener(event -> {
             csvImporterService.importFromCsv(event.getFileName(), buffer.getInputStream());
-            labelSelect.setItems(quizService.getQuizes()); 
+            labelSelect.setItems(quizService.getQuizes());
         });
 
         add(upload, output);
