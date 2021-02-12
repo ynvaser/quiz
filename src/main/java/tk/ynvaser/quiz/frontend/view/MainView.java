@@ -85,6 +85,7 @@ public class MainView extends AppLayout {
         return new Tab[]{
                 //createTab("Quiz Dashboard", QuizDashboardView.class),
                 //createTab("Quiz (name)", QuizmasterViewView.class),
+                createTab("CSVUpload View", CSVUploaderDemo.class),
                 createTab("Quizmaster View", QuiznameView.class)};
     }
 
