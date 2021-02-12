@@ -19,17 +19,17 @@ import tk.ynvaser.quiz.model.quiz.Quiz;
 import tk.ynvaser.quiz.service.CsvImporterService;
 import tk.ynvaser.quiz.service.QuizService;
 
-@Route(value = "quizview", layout = MainView.class)
-@PageTitle("Quiz (name)")
+@Route(value = "admin-view", layout = MainView.class)
+@PageTitle("Adminisztráció")
 @CssImport("./styles/views/quizname/quizname-view.css")
-public class CSVUploaderDemo extends VerticalLayout {
+public class AdminView extends VerticalLayout {
     private final transient CsvImporterService csvImporterService;
     private final transient QuizService quizService;
 
     private Select<Quiz> labelSelect;
 
     @Autowired
-    public CSVUploaderDemo(CsvImporterService csvImporterService, QuizService quizService) {
+    public AdminView(CsvImporterService csvImporterService, QuizService quizService) {
         this.csvImporterService = csvImporterService;
         this.quizService = quizService;
         initVaadinLayout();
