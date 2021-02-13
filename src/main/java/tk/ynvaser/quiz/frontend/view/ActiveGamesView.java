@@ -9,16 +9,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import tk.ynvaser.quiz.model.quiz.Category;
 
-@Route(value = "quizview", layout = MainView.class)
-@PageTitle("Quiz (name)")
+@Route(value = "active-games-view", layout = MainView.class)
+@RouteAlias(value = "", layout = MainView.class)
+@PageTitle("Aktív Játékok")
 @CssImport("./styles/views/quizname/quizname-view.css")
-public class QuiznameView extends Div {
+public class ActiveGamesView extends Div {
 
     Grid<Category> grid = new Grid<>();
 
-    public QuiznameView() {
+    public ActiveGamesView() {
         addClassName("quizname-view");
         setSizeFull();
         grid.setHeight("100%");

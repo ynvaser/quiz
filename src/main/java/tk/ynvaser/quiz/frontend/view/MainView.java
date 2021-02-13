@@ -66,8 +66,8 @@ public class MainView extends AppLayout {
         HorizontalLayout logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        logoLayout.add(new Image("images/logo.png", "My Project logo"));
-        logoLayout.add(new H1("My Project"));
+        logoLayout.add(new Image("images/logo.png", "Logo"));
+        logoLayout.add(new H1("Castrum Sylvanum"));
         layout.add(logoLayout, menu);
         return layout;
     }
@@ -85,8 +85,8 @@ public class MainView extends AppLayout {
         return new Tab[]{
                 //createTab("Quiz Dashboard", QuizDashboardView.class),
                 //createTab("Quiz (name)", QuizmasterViewView.class),
-                createTab("CSVUpload View", CSVUploaderDemo.class),
-                createTab("Quizmaster View", QuiznameView.class)};
+                createTab("Adminisztráció", AdminView.class),
+                createTab("Aktív Játékok", ActiveGamesView.class)};
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
