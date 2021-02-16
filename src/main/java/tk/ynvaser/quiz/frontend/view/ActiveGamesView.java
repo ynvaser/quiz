@@ -1,53 +1,65 @@
 package tk.ynvaser.quiz.frontend.view;
 
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import tk.ynvaser.quiz.model.quiz.Category;
+import org.springframework.beans.factory.annotation.Autowired;
+import tk.ynvaser.quiz.frontend.component.QuizComponent;
+import tk.ynvaser.quiz.frontend.component.QuizIconComponent;
+import tk.ynvaser.quiz.model.quiz.Quiz;
+import tk.ynvaser.quiz.service.QuizService;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 
 @Route(value = "active-games-view", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
 @PageTitle("Aktív Játékok")
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class ActiveGamesView extends Div {
+    private final transient QuizService quizService;
+    private final Set<QuizComponent> displayedQuizzes = new HashSet<>();
 
-    Grid<Category> grid = new Grid<>();
-
-    public ActiveGamesView() {
+    @Autowired
+    public ActiveGamesView(QuizService quizService) {
+        this.quizService = quizService;
         addClassName("quizname-view");
         setSizeFull();
-        grid.setHeight("100%");
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
-        grid.addComponentColumn(this::createCard);
-        add(grid);
+        addQuizIcons();
     }
 
-    private HorizontalLayout createCard(Category category) {
-        HorizontalLayout card = new HorizontalLayout();
-        card.addClassName("card");
-        card.setSpacing(false);
-        card.getThemeList().add("spacing-s");
+    private void addQuizIcons() {
+        FormLayout quizIconContainer = new FormLayout();
+        quizIconContainer.setResponsiveSteps(new ResponsiveStep("25em", 1),
+                new ResponsiveStep("25em", 2),
+                new ResponsiveStep("25em", 3));
+        for (Quiz quiz : quizService.getQuizes()) {
+            QuizIconComponent quizIcon = createQuizIcon(quiz);
+            quizIconContainer.add(quizIcon);
+        }
+        add(quizIconContainer);
+    }
 
-        VerticalLayout description = new VerticalLayout();
-        description.addClassName("description");
-        description.setSpacing(false);
-        description.setPadding(false);
+    private QuizIconComponent createQuizIcon(Quiz quiz) {
+        QuizIconComponent quizIcon = new QuizIconComponent(quiz);
+        QuizComponent linkedQuiz = new QuizComponent(quiz);
+        quizIcon.addClickListener(
+                e -> handleQuizClickEvent(linkedQuiz));
+        return quizIcon;
+    }
 
-        HorizontalLayout header = new HorizontalLayout();
-        header.addClassName("header");
-        header.setSpacing(false);
-        header.getThemeList().add("spacing-s");
-
-        Span name = new Span(category.getName());
-        name.addClassName("name");
-        header.add(name);
-        return card;
+    private void handleQuizClickEvent(QuizComponent linkedQuiz) {
+        if (!displayedQuizzes.contains(linkedQuiz)) {
+            add(linkedQuiz);
+            displayedQuizzes.add(linkedQuiz);
+        } else {
+            remove(linkedQuiz);
+            displayedQuizzes.remove(linkedQuiz);
+        }
     }
 }
