@@ -1,7 +1,5 @@
 package tk.ynvaser.quiz.persistence.entity;
 
-import tk.ynvaser.quiz.model.engine.Game;
-
 import javax.persistence.*;
 
 @Entity
