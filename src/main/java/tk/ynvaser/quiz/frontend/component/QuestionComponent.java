@@ -1,11 +1,9 @@
 package tk.ynvaser.quiz.frontend.component;
 
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.shared.Registration;
 import tk.ynvaser.quiz.model.quiz.Question;
 
 
@@ -20,7 +18,6 @@ public class QuestionComponent extends HorizontalLayout {
 
     public QuestionComponent(Question question) {
         this.question = question;
-
         addName(question);
         addPointValue(question);
         addQuestion(question);
@@ -52,7 +49,15 @@ public class QuestionComponent extends HorizontalLayout {
 
     private void addButton() {
         selectQuestionButton.setEnabled(true);
+        selectQuestionButton.addClickListener(this::handleClickEvent);
         add(selectQuestionButton);
+    }
+
+    private void handleClickEvent(ClickEvent<Button> buttonClickEvent) {
+        QuestionSelectDialog dialog = new QuestionSelectDialog(question);
+        dialog.addListener(QuestionSelectDialog.QuestionAnsweredEvent.class, this::onQuestionAnswered);
+        add(dialog);
+        dialog.open();
     }
 
     public void revealQuestion() {
@@ -71,22 +76,9 @@ public class QuestionComponent extends HorizontalLayout {
         selectQuestionButton.setEnabled(false);
     }
 
-    public static class SelectQuestionEvent extends ComponentEvent<QuestionComponent> {
-        private final transient Question question;
-
-        public SelectQuestionEvent(QuestionComponent source, boolean fromClient) {
-            super(source, fromClient);
-            this.question = source.question;
-        }
-
-        public Question getQuestion() {
-            return question;
-        }
-    }
-
-    @Override
-    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-                                                                  ComponentEventListener<T> listener) {
-        return getEventBus().addListener(eventType, listener);
+    private void onQuestionAnswered(QuestionSelectDialog.QuestionAnsweredEvent event) {
+        revealQuestion();
+        revealAnswer();
+        remove(selectQuestionButton);
     }
 }
