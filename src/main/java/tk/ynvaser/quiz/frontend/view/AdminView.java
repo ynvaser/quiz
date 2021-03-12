@@ -55,26 +55,28 @@ public class AdminView extends VerticalLayout {
         upload.setDropLabel(new Label("Kvíz feltöltése .csv file-ból (';' delimiter, max 100MB)"));
         upload.setAcceptedFileTypes(".csv");
         upload.setMaxFileSize(100000);
-        Div output = new Div();
+        Div errorContainer = new Div();
 
         upload.addFileRejectedListener(event -> {
-            Paragraph component = new Paragraph();
-            showOutput(event.getErrorMessage(), component, output);
+            remove(errorContainer);
+            Paragraph component = new Paragraph(event.getErrorMessage());
+            errorContainer.add(component);
+            add(errorContainer);
         });
 
         upload.addFinishedListener(event -> {
             csvImporterService.importFromCsv(event.getFileName(), buffer.getInputStream());
             labelSelect.setItems(quizService.getQuizes());
+            remove(errorContainer);
         });
 
-        add(upload, output);
+        add(upload);
     }
 
-    private void showOutput(String text, Component content,
-                            HasComponents outputContainer) {
-        HtmlComponent p = new HtmlComponent(Tag.P);
-        p.getElement().setText(text);
-        outputContainer.add(p);
-        outputContainer.add(content);
+    private void handleValueChange(AbstractField.ComponentValueChangeEvent<Select<Quiz>, Quiz> event) {
+        remove(createGameButton);
+        createGameButton = new Button("Create Game");
+        createGameButton.addClickListener(click -> gameService.createGame(new Game(event.getValue())));
+        add(createGameButton);
     }
 }
