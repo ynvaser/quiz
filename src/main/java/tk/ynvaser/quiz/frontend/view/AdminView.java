@@ -1,9 +1,7 @@
 package tk.ynvaser.quiz.frontend.view;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.HtmlComponent;
-import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
@@ -15,8 +13,10 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import tk.ynvaser.quiz.model.engine.Game;
 import tk.ynvaser.quiz.model.quiz.Quiz;
 import tk.ynvaser.quiz.service.CsvImporterService;
+import tk.ynvaser.quiz.service.GameService;
 import tk.ynvaser.quiz.service.QuizService;
 
 @Route(value = "admin-view", layout = MainView.class)
@@ -25,26 +25,30 @@ import tk.ynvaser.quiz.service.QuizService;
 public class AdminView extends VerticalLayout {
     private final transient CsvImporterService csvImporterService;
     private final transient QuizService quizService;
+    private final transient GameService gameService;
 
-    private Select<Quiz> labelSelect;
+    private final Select<Quiz> labelSelect = new Select<>();
+    private Button createGameButton = new Button("Create Game");
 
     @Autowired
-    public AdminView(CsvImporterService csvImporterService, QuizService quizService) {
+    public AdminView(CsvImporterService csvImporterService, QuizService quizService, GameService gameService) {
         this.csvImporterService = csvImporterService;
         this.quizService = quizService;
+        this.gameService = gameService;
         initVaadinLayout();
     }
 
     private void initVaadinLayout() {
         createFileUploader();
-        createQuizSelector();
+        createGameCreator();
     }
 
-    private void createQuizSelector() {
-        labelSelect = new Select<>();
+    private void createGameCreator() {
         labelSelect.setItems(quizService.getQuizes());
         labelSelect.setLabel("Elérhető kvízek");
         labelSelect.setItemLabelGenerator(Quiz::toString);
+        labelSelect.
+                addValueChangeListener(this::handleValueChange);
         add(labelSelect);
     }
 
@@ -55,26 +59,28 @@ public class AdminView extends VerticalLayout {
         upload.setDropLabel(new Label("Kvíz feltöltése .csv file-ból (';' delimiter, max 100MB)"));
         upload.setAcceptedFileTypes(".csv");
         upload.setMaxFileSize(100000);
-        Div output = new Div();
+        Div errorContainer = new Div();
 
         upload.addFileRejectedListener(event -> {
-            Paragraph component = new Paragraph();
-            showOutput(event.getErrorMessage(), component, output);
+            remove(errorContainer);
+            Paragraph component = new Paragraph(event.getErrorMessage());
+            errorContainer.add(component);
+            add(errorContainer);
         });
 
         upload.addFinishedListener(event -> {
             csvImporterService.importFromCsv(event.getFileName(), buffer.getInputStream());
             labelSelect.setItems(quizService.getQuizes());
+            remove(errorContainer);
         });
 
-        add(upload, output);
+        add(upload);
     }
 
-    private void showOutput(String text, Component content,
-                            HasComponents outputContainer) {
-        HtmlComponent p = new HtmlComponent(Tag.P);
-        p.getElement().setText(text);
-        outputContainer.add(p);
-        outputContainer.add(content);
+    private void handleValueChange(AbstractField.ComponentValueChangeEvent<Select<Quiz>, Quiz> event) {
+        remove(createGameButton);
+        createGameButton = new Button("Create Game");
+        createGameButton.addClickListener(click -> gameService.createGame(new Game(event.getValue())));
+        add(createGameButton);
     }
 }

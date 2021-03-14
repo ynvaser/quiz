@@ -9,10 +9,12 @@ import com.vaadin.flow.router.RouteAlias;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.ynvaser.quiz.frontend.component.QuizComponent;
 import tk.ynvaser.quiz.frontend.component.QuizIconComponent;
+import tk.ynvaser.quiz.model.engine.Game;
 import tk.ynvaser.quiz.model.quiz.Quiz;
-import tk.ynvaser.quiz.service.QuizService;
+import tk.ynvaser.quiz.service.GameService;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
@@ -22,28 +24,41 @@ import static com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 @PageTitle("Aktív Játékok")
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class ActiveGamesView extends Div {
-    private final transient QuizService quizService;
+    private final transient GameService gameService;
     private final Set<QuizComponent> displayedQuizzes = new HashSet<>();
+    private final FormLayout quizIconContainer = new FormLayout();
 
     @Autowired
-    public ActiveGamesView(QuizService quizService) {
-        this.quizService = quizService;
+    public ActiveGamesView(GameService gameService) {
+        this.gameService = gameService;
         addClassName("quizname-view");
         setSizeFull();
-        addQuizIcons();
+        addQuizIconContainer();
+        initReactiveQuizIcons();
     }
 
-    private void addQuizIcons() {
-        FormLayout quizIconContainer = new FormLayout();
+    private void addQuizIconContainer() {
         quizIconContainer.setResponsiveSteps(new ResponsiveStep("25em", 1),
                 new ResponsiveStep("25em", 2),
                 new ResponsiveStep("25em", 3));
-        for (Quiz quiz : quizService.getQuizes()) {
-            QuizIconComponent quizIcon = createQuizIcon(quiz);
-            quizIconContainer.add(quizIcon);
-        }
+        setQuizIcons(gameService.getActiveGames());
         add(quizIconContainer);
     }
+
+    private void initReactiveQuizIcons() {
+        //Makes it reactive amon all clients
+        gameService.getFlux().subscribe(games ->
+                //If active games is active, we need access to the UI to update it
+                getUI().ifPresent(ui -> ui.access(() -> setQuizIcons(games))));
+    }
+
+    private void setQuizIcons(List<Game> games) {
+        quizIconContainer.removeAll();
+        for (Game game : games) {
+            quizIconContainer.add(createQuizIcon(game.getQuiz()));
+        }
+    }
+
 
     private QuizIconComponent createQuizIcon(Quiz quiz) {
         QuizIconComponent quizIcon = new QuizIconComponent(quiz);
