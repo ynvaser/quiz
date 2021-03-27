@@ -19,7 +19,7 @@ import java.util.Set;
 
 import static com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 
-@Route(value = "active-games-view", layout = MainView.class)
+@Route(value = "active-games", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
 @PageTitle("Aktív Játékok")
 @CssImport("./styles/views/quizname/quizname-view.css")
