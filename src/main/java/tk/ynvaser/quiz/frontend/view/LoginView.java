@@ -6,10 +6,9 @@ import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.router.*;
 import tk.ynvaser.quiz.security.SecurityUtils;
-import tk.ynvaser.quiz.util.QuizAppConstants;
 
 @Route
-@PageTitle(QuizAppConstants.CASTRUM_SYLVANUM_QUIZ_APP)
+@PageTitle("Login")
 @JsModule("./styles/shared-styles.js")
 @Viewport("width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes, viewport-fit=cover")
 public class LoginView extends LoginOverlay
@@ -18,7 +17,7 @@ public class LoginView extends LoginOverlay
     public LoginView() {
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle(QuizAppConstants.CASTRUM_SYLVANUM_QUIZ_APP);
+        i18n.getHeader().setTitle("Castrum Sylvanum Quiz App");
         i18n.setForm(new LoginI18n.Form());
         i18n.getForm().setSubmit("Sign in");
         i18n.getForm().setTitle("Sign in");
