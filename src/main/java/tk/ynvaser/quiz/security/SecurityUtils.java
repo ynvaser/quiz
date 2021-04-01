@@ -2,6 +2,7 @@ package tk.ynvaser.quiz.security;
 
 import com.vaadin.flow.server.HandlerHelper;
 import com.vaadin.flow.shared.ApplicationConstants;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -21,7 +22,7 @@ public enum SecurityUtils {
     }
 
     private static boolean isUserLoggedIn(Authentication authentication) {
-        return authentication != null;
+        return authentication != null && !(authentication instanceof AnonymousAuthenticationToken);
     }
 
     /**

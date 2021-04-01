@@ -20,10 +20,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_URL = "/login";
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoderBean() {
         return new BCryptPasswordEncoder();
     }
 
@@ -34,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 .and().authorizeRequests()
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().hasAnyRole("USER", "ADMIN")
 
                 .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_URL)
                 .failureUrl(LOGIN_FAILURE_URL)
@@ -45,9 +45,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
         auth.inMemoryAuthentication().passwordEncoder(passwordEncoder)
-                .withUser("david").password("password").roles("ADMIN");
+                .withUser("david").password(passwordEncoder.encode("password")).roles("ADMIN", "USER");
     }
 
     /**
