@@ -2,9 +2,11 @@ package tk.ynvaser.quiz.frontend.view;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.H1;
@@ -21,6 +23,7 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -55,6 +58,7 @@ public class MainView extends AppLayout {
         viewTitle = new H1();
         layout.add(viewTitle);
         layout.add(new Avatar());
+        layout.add(createLogoutButton());
         return layout;
     }
 
@@ -88,7 +92,8 @@ public class MainView extends AppLayout {
                 //createTab("Quiz Dashboard", QuizDashboardView.class),
                 //createTab("Quiz (name)", QuizmasterViewView.class),
                 createTab("Adminisztráció", AdminView.class),
-                createTab("Aktív Játékok", ActiveGamesView.class)};
+                createTab("Aktív Játékok", ActiveGamesView.class)
+        };
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
@@ -96,6 +101,15 @@ public class MainView extends AppLayout {
         tab.add(new RouterLink(text, navigationTarget));
         ComponentUtil.setData(tab, Class.class, navigationTarget);
         return tab;
+    }
+
+    private static Button createLogoutButton() {
+        final Button logout = new Button("Logout");
+        logout.addClickListener(event1 -> {
+            SecurityContextHolder.clearContext();
+            UI.getCurrent().navigate(LoginView.class);
+        });
+        return logout;
     }
 
     @Override
