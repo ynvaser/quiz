@@ -35,7 +35,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //Vaadin handles Cross-Site Request Forgery
-        http.csrf().disable().anonymous()
+        http.csrf().disable()
+
+                .requestCache().requestCache(new BypassingRequestCache())
 
                 .and().authorizeRequests()
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
