@@ -8,9 +8,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import tk.ynvaser.quiz.model.users.Role;
 
 @EnableWebSecurity
 @Configuration
@@ -21,6 +23,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean
     PasswordEncoder passwordEncoderBean() {
@@ -34,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 .and().authorizeRequests()
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-                .anyRequest().hasAnyRole("USER", "ADMIN")
+                .anyRequest().hasAnyAuthority(Role.getRoles())
 
                 .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_URL)
                 .failureUrl(LOGIN_FAILURE_URL)
@@ -45,8 +50,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder)
-                .withUser("david").password(passwordEncoder.encode("password")).roles("ADMIN", "USER");
+        super.configure(auth);
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     /**
@@ -67,6 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/icons/**",
                 "/images/**",
                 "/styles/**",
-                "/h2-console/**");
+                "/h2-console/**"
+        );
     }
 }
