@@ -15,7 +15,7 @@ public class UserEntity {
 
     @NotEmpty
     @NotBlank
-    @Pattern(regexp = "^\\w{5,29}$")
+    @Pattern(regexp = "^\\w{3,29}$")
     @Column(unique = true)
     private String username;
 
