@@ -1,4 +1,4 @@
-package tk.ynvaser.quiz.frontend.view;
+package tk.ynvaser.quiz.frontend.view.admin;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.button.Button;
@@ -8,12 +8,13 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import tk.ynvaser.quiz.model.engine.Game;
+import tk.ynvaser.quiz.frontend.view.MainView;
 import tk.ynvaser.quiz.model.quiz.Quiz;
 import tk.ynvaser.quiz.service.CsvImporterService;
 import tk.ynvaser.quiz.service.GameService;
@@ -29,6 +30,7 @@ public class AdminView extends VerticalLayout {
 
     private final Select<Quiz> labelSelect = new Select<>();
     private Button createGameButton = new Button("Create Game");
+    private TextField gameNameTextField = new TextField("Name");
 
     @Autowired
     public AdminView(CsvImporterService csvImporterService, QuizService quizService, GameService gameService) {
@@ -50,6 +52,7 @@ public class AdminView extends VerticalLayout {
         labelSelect.
                 addValueChangeListener(this::handleValueChange);
         add(labelSelect);
+        add(gameNameTextField);
     }
 
     private void createFileUploader() {
@@ -79,8 +82,12 @@ public class AdminView extends VerticalLayout {
 
     private void handleValueChange(AbstractField.ComponentValueChangeEvent<Select<Quiz>, Quiz> event) {
         remove(createGameButton);
+        gameNameTextField.clear();
+        gameNameTextField.focus();
+        gameNameTextField.setValue(event.getValue().getName());
         createGameButton = new Button("Create Game");
-        createGameButton.addClickListener(click -> gameService.createGame(new Game(event.getValue())));
+        createGameButton.addClickListener(click ->
+                gameService.createGame(gameNameTextField.getValue(), event.getValue()));
         add(createGameButton);
     }
 }

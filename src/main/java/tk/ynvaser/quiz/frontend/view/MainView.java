@@ -24,6 +24,9 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.security.core.context.SecurityContextHolder;
+import tk.ynvaser.quiz.frontend.view.admin.AdminView;
+import tk.ynvaser.quiz.frontend.view.games.ActiveGamesView;
+import tk.ynvaser.quiz.frontend.view.login.LoginView;
 
 import java.util.Optional;
 

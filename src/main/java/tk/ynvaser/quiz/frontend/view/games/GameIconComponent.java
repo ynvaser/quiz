@@ -1,25 +1,22 @@
-package tk.ynvaser.quiz.frontend.component;
+package tk.ynvaser.quiz.frontend.view.games;
 
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import tk.ynvaser.quiz.model.quiz.Quiz;
 
-public class QuizIconComponent extends VerticalLayout {
-    private final transient Quiz quiz;
+public class GameIconComponent extends VerticalLayout {
     private final Paragraph quizName = new Paragraph();
     private final Icon quizIcon = new Icon(VaadinIcon.QUESTION_CIRCLE_O);
 
-    public QuizIconComponent(Quiz quiz) {
-        this.quiz = quiz;
+    public GameIconComponent(String title) {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         addIcon();
-        addLabel();
+        addLabel(title);
     }
 
-    private void addLabel() {
-        quizName.setText(quiz.getName());
+    private void addLabel(String title) {
+        quizName.setText(title);
         quizName.setMaxWidth("90px");
         add(quizName);
     }

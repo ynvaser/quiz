@@ -1,4 +1,4 @@
-package tk.ynvaser.quiz.frontend.component;
+package tk.ynvaser.quiz.frontend.view.games;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -9,19 +9,19 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.shared.Registration;
+import tk.ynvaser.quiz.frontend.event.AnswerAcceptedEvent;
+import tk.ynvaser.quiz.frontend.event.AnswerRejectedEvent;
+import tk.ynvaser.quiz.frontend.event.QuestionAnsweredEvent;
 import tk.ynvaser.quiz.model.quiz.Question;
 
 public class QuestionSelectDialog extends Dialog {
-    private final transient Question question;
+    private transient Question question;
 
     private final Button acceptAnswer = new Button("Accept");
     private final Button rejectAnswer = new Button("Reject");
 
-    public QuestionSelectDialog(Question question) {
-        this.question = question;
+    public QuestionSelectDialog() {
         configureDialog();
-        add(createDialogLayout());
-        add(createButtonLayout());
     }
 
     private void configureDialog() {
@@ -44,7 +44,8 @@ public class QuestionSelectDialog extends Dialog {
         });
     }
 
-    VerticalLayout createDialogLayout() {
+    public void setQuestion(Question question) {
+        removeAll();
         VerticalLayout layout = new VerticalLayout();
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
         layout.add(new Paragraph(question.getName()));
@@ -52,7 +53,8 @@ public class QuestionSelectDialog extends Dialog {
         layout.add(new Paragraph("Points : " + question.getPoints()));
         layout.add(new Paragraph(question.getAnswerText()));
         layout.add(createButtonLayout());
-        return layout;
+        add(layout);
+        add(createButtonLayout());
     }
 
     HorizontalLayout createButtonLayout() {
@@ -72,24 +74,6 @@ public class QuestionSelectDialog extends Dialog {
 
     public Button getRejectAnswer() {
         return rejectAnswer;
-    }
-
-    public static class QuestionAnsweredEvent extends ComponentEvent<QuestionSelectDialog> {
-        QuestionAnsweredEvent(QuestionSelectDialog source, boolean fromClient) {
-            super(source, fromClient);
-        }
-    }
-
-    public static class AnswerAcceptedEvent extends ComponentEvent<QuestionSelectDialog> {
-        AnswerAcceptedEvent(QuestionSelectDialog source, boolean fromClient) {
-            super(source, fromClient);
-        }
-    }
-
-    public static class AnswerRejectedEvent extends ComponentEvent<QuestionSelectDialog> {
-        AnswerRejectedEvent(QuestionSelectDialog source, boolean fromClient) {
-            super(source, fromClient);
-        }
     }
 
 
