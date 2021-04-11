@@ -1,5 +1,6 @@
 package tk.ynvaser.quiz.frontend.view.games;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.PageTitle;
@@ -10,6 +11,7 @@ import tk.ynvaser.quiz.frontend.event.QuestionAnsweredEvent;
 import tk.ynvaser.quiz.frontend.event.QuestionSelectedEvent;
 import tk.ynvaser.quiz.frontend.view.MainView;
 import tk.ynvaser.quiz.model.engine.Game;
+import tk.ynvaser.quiz.model.quiz.Question;
 import tk.ynvaser.quiz.service.GameService;
 
 import java.util.HashSet;
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class ActiveGamesView extends Div {
     private final transient GameService gameService;
-    private final Set<GameComponent> games = new HashSet<>();
+    private final Set<GameComponent> gameComponents = new HashSet<>();
     private final GameListingComponent gameListingComponent = new GameListingComponent();
     private final QuestionSelectDialog questionSelectDialog = new QuestionSelectDialog();
 
@@ -33,36 +35,51 @@ public class ActiveGamesView extends Div {
         addClassName("quizname-view");
         setSizeFull();
         addGamesList();
-        refreshIconsOnPush();
         configureDialog();
+        subscribeToQuestions();
+        subscribeToGamesListUpdates();
+        subscribeToGameUpdates();
     }
 
-    private void configureDialog() {
-        addListener(QuestionSelectedEvent.class, e -> gameService.selectQuestion(e.getQuestion()));
-        gameService.getSelectedQuestionFlux().subscribe(question -> getUI().ifPresent(ui -> ui.access(() -> {
-            questionSelectDialog.setQuestion(question);
-            questionSelectDialog.open();
-            gameService.updateQuestion(question);
-        })));
-        questionSelectDialog.addListener(QuestionAnsweredEvent.class, e -> e.getSource().close());
-        add(questionSelectDialog);
+    private void subscribeToQuestions() {
+        gameService.getQuestionFlux().subscribe(question -> getUI().ifPresent(ui -> ui.access(() -> showDialog(question))));
     }
 
     private void addGamesList() {
         add(gameListingComponent);
-        setGames(gameService.getActiveGames());
+        setGameComponents(gameService.getActiveGames());
     }
 
-    private void refreshIconsOnPush() {
-        gameService.getActiveGamesFlux().subscribe(activeGames ->
-                getUI().ifPresent(ui -> ui.access(() -> setGames(activeGames))));
+    private void configureDialog() {
+        questionSelectDialog.addListener(QuestionAnsweredEvent.class, e -> questionSelectDialog.close());
     }
 
-    private void setGames(List<Game> games) {
-        this.games.clear();
-        List<GameIconComponent> gameIconComponents = games.stream().map(this::createQuizIcon).collect(Collectors.toList());
+    private void subscribeToGamesListUpdates() {
+        gameService.getGamesListFlux().subscribe(games ->
+                getUI().ifPresent(ui -> ui.access(() -> setGameComponents(games))));
+    }
+
+    private void subscribeToGameUpdates() {
+        gameService.getGameFlux().subscribe(game -> getUI().ifPresent(ui -> ui.access(() -> updateGame(game))));
+    }
+
+    private void setGameComponents(List<Game> gameComponents) {
+        Set<Long> wereOpen = this.gameComponents.stream().filter(Component::isVisible).map(GameComponent::getGameId).collect(Collectors.toSet());
+        remove(this.gameComponents.toArray(GameComponent[]::new));
+        this.gameComponents.clear();
+        List<GameIconComponent> gameIconComponents = gameComponents.stream().map(this::createQuizIcon).collect(Collectors.toList());
         gameListingComponent.setItems(gameIconComponents);
-        add(this.games.toArray(GameComponent[]::new));
+        add(this.gameComponents.toArray(GameComponent[]::new));
+        this.gameComponents.stream().filter(gc -> wereOpen.contains(gc.getGameId())).forEach(gc -> gc.setVisible(true));
+    }
+
+    private void updateGame(Game game) {
+        for (GameComponent gameComponent : gameComponents) {
+            if (gameComponent.getGameId() == game.getId()) {
+                gameComponent.setGame(game);
+                return;
+            }
+        }
     }
 
 
@@ -76,10 +93,22 @@ public class ActiveGamesView extends Div {
 
     private GameComponent createLinkedGame(Game game) {
         GameComponent linkedGame = new GameComponent(game);
-        linkedGame.addListener(QuestionSelectedEvent.class, this::fireEvent);
+        linkedGame.addListener(QuestionSelectedEvent.class, e -> handleQuestionSelect(e, linkedGame));
         linkedGame.setVisible(false);
-        games.add(linkedGame);
+        gameComponents.add(linkedGame);
         return linkedGame;
+    }
+
+    private void handleQuestionSelect(QuestionSelectedEvent event, GameComponent gameComponent) {
+        //Just for testing if the Game Component updates taken by properly
+        event.getQuestion().setTakenBy(gameComponent.getGame().getTeams().get(0));
+        gameService.updateGame(gameComponent.getGame());
+        gameService.selectQuestion(event.getQuestion());
+    }
+
+    private void showDialog(Question question) {
+        questionSelectDialog.setQuestion(question);
+        questionSelectDialog.open();
     }
 
     private void handleQuizClickEvent(GameComponent linkedQuiz) {

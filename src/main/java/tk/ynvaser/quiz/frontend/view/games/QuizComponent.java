@@ -3,6 +3,7 @@ package tk.ynvaser.quiz.frontend.view.games;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.shared.Registration;
 import tk.ynvaser.quiz.frontend.event.QuestionSelectedEvent;
@@ -40,13 +41,17 @@ public class QuizComponent extends Div {
         questionGrid.addColumn(this::getTakenBy).setHeader("Taken By")
                 .setAutoWidth(true)
                 .setResizable(true);
-        questionGrid.addItemClickListener(e -> fireEvent(new QuestionSelectedEvent(this, e.getItem())));
+        questionGrid.addItemClickListener(this::onComponentEvent);
         questionGrid.setItems(category.getQuestions());
         return questionGrid;
     }
 
     private String getTakenBy(Question question) {
         return question.getTakenBy() == null ? "" : question.getTakenBy().getName();
+    }
+
+    private void onComponentEvent(ItemClickEvent<Question> e) {
+        fireEvent(new QuestionSelectedEvent(this, e.getItem()));
     }
 
     public void setQuiz(Quiz quiz) {

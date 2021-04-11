@@ -10,14 +10,28 @@ import tk.ynvaser.quiz.model.engine.Game;
 
 public class GameComponent extends Div {
     private final QuizComponent quizComponent = new QuizComponent();
+    private final long gameId;
+    private transient Game game;
 
     public GameComponent(Game game) {
+        this.gameId = game.getId();
+        this.game = game;
         quizComponent.setQuiz(game.getQuiz());
         quizComponent.addListener(QuestionSelectedEvent.class, this::fireEvent);
         add(quizComponent);
     }
 
+    public long getGameId() {
+        return gameId;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+
     public void setGame(Game game) {
+        this.game = game;
         quizComponent.setQuiz(game.getQuiz());
     }
 
