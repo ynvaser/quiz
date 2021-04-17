@@ -2,70 +2,49 @@ package tk.ynvaser.quiz.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.UnicastProcessor;
 import tk.ynvaser.quiz.model.engine.Game;
-import tk.ynvaser.quiz.model.engine.Team;
 import tk.ynvaser.quiz.model.quiz.Question;
 import tk.ynvaser.quiz.model.quiz.Quiz;
 import tk.ynvaser.quiz.persistence.entity.GameEntity;
 import tk.ynvaser.quiz.persistence.repository.GameRepository;
+import tk.ynvaser.quiz.service.broadcast.BroadcastService;
+import tk.ynvaser.quiz.service.broadcast.event.GameUpdateBroadcast;
+import tk.ynvaser.quiz.service.broadcast.event.GamesListBroadcast;
+import tk.ynvaser.quiz.service.broadcast.event.QuestionSelectBroadcast;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class provides the interface to create an active game and change the state of the current active games.
+ */
 @Service
 public class GameService {
-    UnicastProcessor<List<Game>> gamesListPublisher;
-    Flux<List<Game>> gamesListFlux;
-    UnicastProcessor<Game> gamePublisher;
-    Flux<Game> gameFlux;
-    UnicastProcessor<Question> questionPublisher;
-    Flux<Question> questionFlux;
-
+    private final BroadcastService broadcastService;
     private final GameRepository gameRepository;
 
     @Autowired
-    public GameService(GameRepository gameRepository) {
+    public GameService(BroadcastService broadcastService, GameRepository gameRepository) {
+        this.broadcastService = broadcastService;
         this.gameRepository = gameRepository;
-        gamesListPublisher = UnicastProcessor.create();
-        gamesListFlux = gamesListPublisher.publish().autoConnect();
-        gamePublisher = UnicastProcessor.create();
-        gameFlux = gamePublisher.publish().autoConnect();
-        questionPublisher = UnicastProcessor.create();
-        questionFlux = questionPublisher.publish().autoConnect();
-    }
-
-    public Flux<List<Game>> getGamesListFlux() {
-        return gamesListFlux;
-    }
-
-    public Flux<Game> getGameFlux() {
-        return gameFlux;
-    }
-
-    public Flux<Question> getQuestionFlux() {
-        return questionFlux;
     }
 
     @Transactional
     public void createGame(String name, Quiz quiz) {
-        Team defaultTeam = new Team("DEFAULT_TEAM", null, Collections.emptyList());
-        Game game = new Game(name, quiz, List.of(defaultTeam));
+        Game game = new Game(name, quiz);
         GameEntity gameEntity = new GameEntity();
         gameEntity.setGame(game);
         gameRepository.save(gameEntity);
-        gamesListPublisher.onNext(getActiveGames());
+        broadcastService.getGamesListChannel().publish(new GamesListBroadcast(getActiveGames()));
     }
 
     @Transactional
-    public void updateGame(Game game) {
+    private void updateGame(Game game) {
         GameEntity gameEntity = gameRepository.getOne(game.getId());
         gameEntity.setGame(game);
         gameRepository.save(gameEntity);
-        gamePublisher.onNext(game);
+        broadcastService.getGameUpdateChannel().publish(new GameUpdateBroadcast(game));
     }
 
     @Transactional
@@ -73,7 +52,10 @@ public class GameService {
         return gameRepository.findAll().stream().map(Game::fromEntity).collect(Collectors.toList());
     }
 
-    public void selectQuestion(Question question) {
-        questionPublisher.onNext(question);
+    @Transactional
+    public void selectQuestion(Question question, Game game) {
+        question.setTakenBy(game.getCurrentTeam());
+        updateGame(game);
+        broadcastService.getQuestionSelectChannel().publish(new QuestionSelectBroadcast(question));
     }
 }

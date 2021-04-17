@@ -1,13 +1,11 @@
 package tk.ynvaser.quiz.persistence.entity;
 
-import lombok.Data;
 import tk.ynvaser.quiz.model.users.Role;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @Entity
-@Data
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,4 +23,32 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

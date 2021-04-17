@@ -13,6 +13,7 @@ import tk.ynvaser.quiz.frontend.view.MainView;
 import tk.ynvaser.quiz.model.engine.Game;
 import tk.ynvaser.quiz.model.quiz.Question;
 import tk.ynvaser.quiz.service.GameService;
+import tk.ynvaser.quiz.service.broadcast.BroadcastService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -25,13 +26,15 @@ import java.util.stream.Collectors;
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class ActiveGamesView extends Div {
     private final transient GameService gameService;
+    private final transient BroadcastService broadcastService;
     private final Set<GameComponent> gameComponents = new HashSet<>();
     private final GameListingComponent gameListingComponent = new GameListingComponent();
     private final QuestionSelectDialog questionSelectDialog = new QuestionSelectDialog();
 
     @Autowired
-    public ActiveGamesView(GameService gameService) {
+    public ActiveGamesView(GameService gameService, BroadcastService broadcastService) {
         this.gameService = gameService;
+        this.broadcastService = broadcastService;
         addClassName("quizname-view");
         setSizeFull();
         addGamesList();
@@ -42,7 +45,7 @@ public class ActiveGamesView extends Div {
     }
 
     private void subscribeToQuestions() {
-        gameService.getQuestionFlux().subscribe(question -> getUI().ifPresent(ui -> ui.access(() -> showDialog(question))));
+        broadcastService.getQuestionSelectChannel().subscribe(broadcast -> getUI().ifPresent(ui -> ui.access(() -> showDialog(broadcast.getQuestion()))));
     }
 
     private void addGamesList() {
@@ -55,12 +58,12 @@ public class ActiveGamesView extends Div {
     }
 
     private void subscribeToGamesListUpdates() {
-        gameService.getGamesListFlux().subscribe(games ->
-                getUI().ifPresent(ui -> ui.access(() -> setGameComponents(games))));
+        broadcastService.getGamesListChannel().subscribe(broadcast ->
+                getUI().ifPresent(ui -> ui.access(() -> setGameComponents(broadcast.getGamesList()))));
     }
 
     private void subscribeToGameUpdates() {
-        gameService.getGameFlux().subscribe(game -> getUI().ifPresent(ui -> ui.access(() -> updateGame(game))));
+        broadcastService.getGameUpdateChannel().subscribe(broadcast -> getUI().ifPresent(ui -> ui.access(() -> updateGame(broadcast.getGame()))));
     }
 
     private void setGameComponents(List<Game> gameComponents) {
@@ -100,10 +103,7 @@ public class ActiveGamesView extends Div {
     }
 
     private void handleQuestionSelect(QuestionSelectedEvent event, GameComponent gameComponent) {
-        //Just for testing if the Game Component updates taken by properly
-        event.getQuestion().setTakenBy(gameComponent.getGame().getTeams().get(0));
-        gameService.updateGame(gameComponent.getGame());
-        gameService.selectQuestion(event.getQuestion());
+        gameService.selectQuestion(event.getQuestion(), gameComponent.getGame());
     }
 
     private void showDialog(Question question) {

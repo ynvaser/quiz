@@ -19,14 +19,17 @@ public class Game {
     private String name;
     private Quiz quiz;
     private List<Team> teams;
+    private Team currentTeam;
 
-    public Game() {
-    }
-
-    public Game(@JsonProperty("name") String name, @JsonProperty("quiz") Quiz quiz, @JsonProperty("teams") List<Team> teams) {
+    public Game(String name, Quiz quiz) {
         this.name = name;
         this.quiz = quiz;
+    }
+
+    public Game(@JsonProperty("name") String name, @JsonProperty("quiz") Quiz quiz, @JsonProperty("teams") List<Team> teams, @JsonProperty("currentTeam") Team currentTeam) {
+        this(name, quiz);
         this.teams = teams;
+        this.currentTeam = currentTeam;
     }
 
     void registerTeam(Team team) {

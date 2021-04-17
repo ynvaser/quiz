@@ -28,7 +28,7 @@ class GameSerializationTest {
         Category category = new Category("cname", List.of(question));
         Quiz quiz = new Quiz("qname", List.of(category));
         Team team = new Team("tname", new User("uname", Role.USER), Collections.emptyList());
-        Game game = new Game("gname", quiz, List.of(team));
+        Game game = new Game("gname", quiz, List.of(team), team);
         String toJson = game.toJson();
         Game game1 = Game.fromJson(toJson);
 
