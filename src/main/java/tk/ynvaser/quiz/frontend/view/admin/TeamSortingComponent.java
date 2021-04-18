@@ -6,8 +6,8 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.dnd.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import tk.ynvaser.quiz.frontend.util.GridUtilities;
 import tk.ynvaser.quiz.model.users.User;
 
 import java.util.ArrayList;
@@ -41,22 +41,18 @@ public class TeamSortingComponent extends VerticalLayout {
     }
 
     private void createNewTeamGrid(ClickEvent<Button> buttonClickEvent) {
-        Grid<User> teamGrid = new Grid<>();
-        teamGrid.setHeightByRows(true);
-        teamGrid.setWidth("25em");
-        teamGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        teamGrid.addDropListener(this::onGridDrop);
-        teamGrid.addDragStartListener(this::onGridDragStart);
-        teamGrid.addDragEndListener(this::onGridDragEnd);
-        teamGrid.setRowsDraggable(true);
-        TextField teamName = new TextField();
-        teamName.setValue("Team Name");
-        teamGrid.addColumn(User::getName).setHeader(teamName);
-        teamGrids.add(teamGrid);
-        teamContainer.add(teamGrid);
+        TeamCreatorComponent teamCreatorComponent = new TeamCreatorComponent(this);
+        teamCreatorComponent.getDeleteButton().addClickListener(e -> {
+            List<User> remainingUsers = GridUtilities.getItems(userGrid);
+            remainingUsers.addAll(teamCreatorComponent.getTeamMembers());
+            userGrid.setItems(remainingUsers);
+            teamContainer.remove(teamCreatorComponent);
+        });
+        teamGrids.add(teamCreatorComponent.getMemberGrid());
+        teamContainer.add(teamCreatorComponent);
     }
 
-    private void onGridDrop(GridDropEvent<User> event) {
+    void onGridDrop(GridDropEvent<User> event) {
         Optional<User> target = event.getDropTargetItem();
         if (target.isPresent() && draggedItems.contains(target.get())) {
             return;
@@ -85,14 +81,14 @@ public class TeamSortingComponent extends VerticalLayout {
         targetGrid.setItems(targetItems);
     }
 
-    private void onGridDragEnd(GridDragEndEvent<User> event) {
+    void onGridDragEnd(GridDragEndEvent<User> event) {
         draggedItems = null;
         dragSource = null;
         userGrid.setDropMode(null);
         teamGrids.forEach(grid -> grid.setDropMode(null));
     }
 
-    private void onGridDragStart(GridDragStartEvent<User> event) {
+    void onGridDragStart(GridDragStartEvent<User> event) {
         draggedItems = event.getDraggedItems();
         dragSource = event.getSource();
         userGrid.setDropMode(GridDropMode.ON_TOP_OR_BETWEEN);
