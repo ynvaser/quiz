@@ -3,7 +3,6 @@ package tk.ynvaser.quiz.frontend.view.admin;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Paragraph;
@@ -17,8 +16,6 @@ import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.ynvaser.quiz.frontend.view.MainView;
 import tk.ynvaser.quiz.model.quiz.Quiz;
-import tk.ynvaser.quiz.model.users.Role;
-import tk.ynvaser.quiz.model.users.User;
 import tk.ynvaser.quiz.service.CsvImporterService;
 import tk.ynvaser.quiz.service.GameService;
 import tk.ynvaser.quiz.service.QuizService;
@@ -48,25 +45,6 @@ public class AdminView extends VerticalLayout {
     private void initVaadinLayout() {
         createFileUploader();
         createGameCreator();
-        createUserListing();
-    }
-
-
-    private void createUserListing() {
-        Grid<User> userGrid = new Grid<>();
-        userGrid.setHeightByRows(true);
-        userGrid.addColumn(User::getName);
-        userGrid.addComponentColumn(this::createRoleSelectForUser);
-        userGrid.setItems(userService.getAllUsers());
-        add(userGrid);
-    }
-
-    private Select<Role> createRoleSelectForUser(User user) {
-        Select<Role> select = new Select<>();
-        select.setItems(Role.values());
-        select.setValue(user.getRole());
-        select.addValueChangeListener(event -> userService.setRoleForUser(user, event.getValue()));
-        return select;
     }
 
     private void createGameCreator() {
