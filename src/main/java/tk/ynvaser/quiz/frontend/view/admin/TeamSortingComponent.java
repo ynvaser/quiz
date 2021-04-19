@@ -16,10 +16,15 @@ import java.util.Optional;
 
 public class TeamSortingComponent extends VerticalLayout {
     private final Grid<User> userGrid = new Grid<>();
+    private final List<TeamCreatorComponent> teamCreators = new ArrayList<>();
     private final List<Grid<User>> teamGrids = new ArrayList<>();
     private final FormLayout teamContainer = new FormLayout();
     private transient List<User> draggedItems;
     private Grid<User> dragSource;
+
+    public List<TeamCreatorComponent> getTeamCreators() {
+        return teamCreators;
+    }
 
     public TeamSortingComponent(List<User> users) {
         teamContainer.setResponsiveSteps(new FormLayout.ResponsiveStep("25em", 1),
@@ -49,6 +54,7 @@ public class TeamSortingComponent extends VerticalLayout {
             teamContainer.remove(teamCreatorComponent);
         });
         teamGrids.add(teamCreatorComponent.getMemberGrid());
+        teamCreators.add(teamCreatorComponent);
         teamContainer.add(teamCreatorComponent);
     }
 

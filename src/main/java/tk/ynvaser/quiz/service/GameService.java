@@ -2,7 +2,9 @@ package tk.ynvaser.quiz.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.ynvaser.quiz.dto.TeamDTO;
 import tk.ynvaser.quiz.model.engine.Game;
+import tk.ynvaser.quiz.model.engine.Team;
 import tk.ynvaser.quiz.model.quiz.Question;
 import tk.ynvaser.quiz.model.quiz.Quiz;
 import tk.ynvaser.quiz.persistence.entity.GameEntity;
@@ -31,8 +33,9 @@ public class GameService {
     }
 
     @Transactional
-    public void createGame(String name, Quiz quiz) {
-        Game game = new Game(name, quiz);
+    public void createGame(String name, Quiz quiz, List<TeamDTO> teams) {
+        List<Team> teamList = teams.stream().map(Team::fromDto).collect(Collectors.toList());
+        Game game = new Game(name, quiz, teamList, teamList.get(0));
         GameEntity gameEntity = new GameEntity();
         gameEntity.setGame(game);
         gameRepository.save(gameEntity);

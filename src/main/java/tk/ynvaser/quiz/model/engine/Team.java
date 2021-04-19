@@ -2,6 +2,7 @@ package tk.ynvaser.quiz.model.engine;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import tk.ynvaser.quiz.dto.TeamDTO;
 import tk.ynvaser.quiz.model.users.User;
 
 import java.util.List;
@@ -16,5 +17,9 @@ public class Team {
         this.name = name;
         this.leader = leader;
         this.members = members;
+    }
+
+    public static Team fromDto(TeamDTO teamDTO) {
+        return new Team(teamDTO.getTeamName(), teamDTO.getTeamMembers().get(0), teamDTO.getTeamMembers());
     }
 }

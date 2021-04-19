@@ -14,12 +14,17 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import tk.ynvaser.quiz.dto.TeamDTO;
 import tk.ynvaser.quiz.frontend.view.MainView;
 import tk.ynvaser.quiz.model.quiz.Quiz;
+import tk.ynvaser.quiz.model.users.User;
 import tk.ynvaser.quiz.service.CsvImporterService;
 import tk.ynvaser.quiz.service.GameService;
 import tk.ynvaser.quiz.service.QuizService;
 import tk.ynvaser.quiz.service.UserService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Route(value = "admin-view", layout = MainView.class)
 @PageTitle("Adminisztráció")
@@ -27,17 +32,22 @@ import tk.ynvaser.quiz.service.UserService;
 public class AdminView extends VerticalLayout {
     private final transient CsvImporterService csvImporterService;
     private final transient QuizService quizService;
+    private final transient GameService gameService;
     private final transient UserService userService;
 
     private final Select<Quiz> labelSelect = new Select<>();
     private final TextField gameNameTextField = new TextField("Name");
+    private final Div gameCreationErrorContainer = new Div();
+    private TeamSortingComponent teamSortingComponent;
     private Button createGameButton = new Button("Create Game");
+    private Button finalizeGameButton;
 
 
     @Autowired
     public AdminView(CsvImporterService csvImporterService, QuizService quizService, GameService gameService, UserService userService) {
         this.csvImporterService = csvImporterService;
         this.quizService = quizService;
+        this.gameService = gameService;
         this.userService = userService;
         initVaadinLayout();
     }
@@ -88,11 +98,54 @@ public class AdminView extends VerticalLayout {
         gameNameTextField.focus();
         gameNameTextField.setValue(event.getValue().getName());
         createGameButton = new Button("Create Game");
-        createGameButton.addClickListener(click -> createTeamSorting());
+        createGameButton.addClickListener(click -> createTeamSorting(gameNameTextField.getValue(), event.getValue()));
         add(createGameButton);
     }
 
-    private void createTeamSorting() {
-        add(new TeamSortingComponent(userService.getAllUsers()));
+    private void createTeamSorting(String gameName, Quiz quiz) {
+        if (teamSortingComponent != null) {
+            remove(teamSortingComponent);
+        }
+        if (finalizeGameButton != null) {
+            remove(finalizeGameButton);
+        }
+        teamSortingComponent = new TeamSortingComponent(userService.getAllUsers());
+        add(teamSortingComponent);
+        finalizeGameButton = new Button("Finalize Game");
+        finalizeGameButton.addClickListener(e -> finalizeGame(gameName, quiz, teamSortingComponent));
+        add(finalizeGameButton);
+        add(gameCreationErrorContainer);
+    }
+
+    private void finalizeGame(String gameName, Quiz quiz, TeamSortingComponent teamSortingComponent) {
+        List<TeamDTO> teams = getTeams(teamSortingComponent);
+        boolean gameValid = true;
+        gameCreationErrorContainer.removeAll();
+        if (teams.size() < 2) {
+            gameValid = false;
+            gameCreationErrorContainer.add(new Paragraph("Cannot create a game with no teams!"));
+        }
+        if (teams.stream().anyMatch(team -> team.getTeamName().isEmpty())) {
+            gameValid = false;
+            gameCreationErrorContainer.add(new Paragraph("Cannot create a team with no name!"));
+        }
+        if (teams.stream().anyMatch(team -> team.getTeamMembers().isEmpty())) {
+            gameValid = false;
+            gameCreationErrorContainer.add(new Paragraph("Cannot create a team with no members!"));
+        }
+        if (gameValid) {
+            gameService.createGame(gameName, quiz, teams);
+            remove(teamSortingComponent, finalizeGameButton);
+        }
+    }
+
+    private List<TeamDTO> getTeams(TeamSortingComponent teamSortingComponent) {
+        List<TeamDTO> teams = new ArrayList<>();
+        for (TeamCreatorComponent teamCreator : teamSortingComponent.getTeamCreators()) {
+            String teamName = teamCreator.getNameField().getValue();
+            List<User> teamMembers = teamCreator.getTeamMembers();
+            teams.add(new TeamDTO(teamName, teamMembers));
+        }
+        return teams;
     }
 }
