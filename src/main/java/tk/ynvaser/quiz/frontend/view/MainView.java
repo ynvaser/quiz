@@ -24,6 +24,10 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.security.core.context.SecurityContextHolder;
+import tk.ynvaser.quiz.frontend.view.admin.AdminView;
+import tk.ynvaser.quiz.frontend.view.games.ActiveGamesView;
+import tk.ynvaser.quiz.frontend.view.login.LoginView;
+import tk.ynvaser.quiz.frontend.view.usermanagement.UserManagementView;
 
 import java.util.Optional;
 
@@ -89,10 +93,9 @@ public class MainView extends AppLayout {
 
     private Component[] createMenuItems() {
         return new Tab[]{
-                //createTab("Quiz Dashboard", QuizDashboardView.class),
-                //createTab("Quiz (name)", QuizmasterViewView.class),
                 createTab("Adminisztráció", AdminView.class),
-                createTab("Aktív Játékok", ActiveGamesView.class)
+                createTab("Aktív Játékok", ActiveGamesView.class),
+                createTab("User Management", UserManagementView.class)
         };
     }
 

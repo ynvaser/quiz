@@ -4,7 +4,9 @@ import com.vaadin.flow.server.HandlerHelper;
 import com.vaadin.flow.shared.ApplicationConstants;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Stream;
@@ -12,11 +14,17 @@ import java.util.stream.Stream;
 public enum SecurityUtils {
     ;
 
-    /**
-     * Checks if the user is logged in.
-     *
-     * @return true if the user is logged in. False otherwise.
-     */
+    public static String getUsername() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Object principal = context.getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
+            return userDetails.getUsername();
+        }
+        // Anonymous or no authentication.
+        return null;
+    }
+
     public static boolean isUserLoggedIn() {
         return isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
     }

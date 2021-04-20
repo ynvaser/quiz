@@ -1,10 +1,11 @@
-package tk.ynvaser.quiz.frontend.view;
+package tk.ynvaser.quiz.frontend.view.login;
 
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.router.*;
+import tk.ynvaser.quiz.frontend.view.games.ActiveGamesView;
 import tk.ynvaser.quiz.security.SecurityUtils;
 
 @Route

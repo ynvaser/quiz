@@ -1,20 +1,22 @@
 package tk.ynvaser.quiz.model.quiz;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import tk.ynvaser.quiz.persistence.entity.CategoryEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Value
 @ToString
 public class Category {
-    private final String name;
-    private final List<Question> questions;
+    String name;
+    List<Question> questions;
+
+    public Category(@JsonProperty("name") String name, @JsonProperty("questions") List<Question> questions) {
+        this.name = name;
+        this.questions = questions;
+    }
 
     public static Category fromEntity(CategoryEntity entity) {
         List<Question> questions = entity

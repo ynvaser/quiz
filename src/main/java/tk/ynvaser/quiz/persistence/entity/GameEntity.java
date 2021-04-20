@@ -1,5 +1,8 @@
 package tk.ynvaser.quiz.persistence.entity;
 
+import tk.ynvaser.quiz.model.engine.Game;
+import tk.ynvaser.quiz.persistence.converter.JsonToGameConverter;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,21 +12,18 @@ public class GameEntity {
     private Long id;
 
     @Column(columnDefinition = "JSON")
-    private String gameJson;
+    @Convert(converter = JsonToGameConverter.class)
+    private Game game;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Game getGame() {
+        return game;
     }
 
-    public String getGameJson() {
-        return gameJson;
-    }
-
-    public void setGameJson(String gameJson) {
-        this.gameJson = gameJson;
+    public void setGame(Game game) {
+        this.game = game;
     }
 }
