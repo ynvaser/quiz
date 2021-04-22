@@ -13,7 +13,7 @@ import tk.ynvaser.quiz.model.users.User;
 import tk.ynvaser.quiz.service.UserService;
 
 @Route(value = "user-management-view", layout = MainView.class)
-@PageTitle("User Management")
+@PageTitle("Felhasználók")
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class UserManagementView extends VerticalLayout {
     private final transient UserService userService;
