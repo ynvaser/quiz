@@ -39,7 +39,7 @@ public class AdminView extends VerticalLayout {
     private final TextField gameNameTextField = new TextField("Name");
     private final Div gameCreationErrorContainer = new Div();
     private final TeamSortingComponent teamSortingComponent = new TeamSortingComponent();
-    private Button createGameButton = new Button("Create Game");
+    private Button createGameButton = new Button("Játék Hozzáadása");
     private Button finalizeGameButton = new Button("Játék Véglegesítése");
 
 

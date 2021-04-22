@@ -39,7 +39,7 @@ public class TeamSortingComponent extends VerticalLayout {
         userGrid.addDragEndListener(this::onGridDragEnd);
         userGrid.setRowsDraggable(true);
         userGrid.addColumn(User::getName);
-        Button addTeamButton = new Button("Add Team");
+        Button addTeamButton = new Button("Csapat Hozzáadása");
         addTeamButton.addClickListener(this::createNewTeamGrid);
         add(this.userGrid, addTeamButton, teamContainer);
     }
