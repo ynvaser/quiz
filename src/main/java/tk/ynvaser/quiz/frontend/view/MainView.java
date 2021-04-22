@@ -93,7 +93,7 @@ public class MainView extends AppLayout {
 
     private Component[] createMenuItems() {
         return new Tab[]{
-                createTab("Adminisztráció", AdminView.class),
+                createTab("Játék Adminisztráció", AdminView.class),
                 createTab("Aktív Játékok", ActiveGamesView.class),
                 createTab("Felhasználók", UserManagementView.class)
         };

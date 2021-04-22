@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Route(value = "admin-view", layout = MainView.class)
-@PageTitle("Adminisztráció")
+@PageTitle("Játék Adminisztráció")
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class AdminView extends VerticalLayout {
     private final transient CsvImporterService csvImporterService;
