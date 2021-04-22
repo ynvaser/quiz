@@ -4,6 +4,6 @@ import lombok.Value;
 import tk.ynvaser.quiz.model.quiz.Question;
 
 @Value
-public class QuestionSelectBroadcast implements Broadcast {
+public class QuestionSelectBroadcast{
     Question question;
 }
