@@ -95,7 +95,7 @@ public class MainView extends AppLayout {
         return new Tab[]{
                 createTab("Adminisztráció", AdminView.class),
                 createTab("Aktív Játékok", ActiveGamesView.class),
-                createTab("User Management", UserManagementView.class)
+                createTab("Felhasználók", UserManagementView.class)
         };
     }
 
