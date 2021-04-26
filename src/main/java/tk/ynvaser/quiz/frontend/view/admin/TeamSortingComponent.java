@@ -26,23 +26,26 @@ public class TeamSortingComponent extends VerticalLayout {
         return teamCreators;
     }
 
-    public TeamSortingComponent(List<User> users) {
+    public TeamSortingComponent() {
         teamContainer.setResponsiveSteps(new FormLayout.ResponsiveStep("25em", 1),
                 new FormLayout.ResponsiveStep("25em", 2),
                 new FormLayout.ResponsiveStep("25em", 3),
                 new FormLayout.ResponsiveStep("25em", 4),
                 new FormLayout.ResponsiveStep("25em", 5));
         userGrid.setHeightByRows(true);
-        userGrid.setItems(users);
         userGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         userGrid.addDropListener(this::onGridDrop);
         userGrid.addDragStartListener(this::onGridDragStart);
         userGrid.addDragEndListener(this::onGridDragEnd);
         userGrid.setRowsDraggable(true);
         userGrid.addColumn(User::getName);
-        Button addTeamButton = new Button("Add Team");
+        Button addTeamButton = new Button("Csapat Hozzáadása");
         addTeamButton.addClickListener(this::createNewTeamGrid);
         add(this.userGrid, addTeamButton, teamContainer);
+    }
+
+    public void setUsers(List<User> users) {
+        userGrid.setItems(users);
     }
 
     private void createNewTeamGrid(ClickEvent<Button> buttonClickEvent) {

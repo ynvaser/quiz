@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Route(value = "admin-view", layout = MainView.class)
-@PageTitle("Adminisztráció")
+@PageTitle("Játék Adminisztráció")
 @CssImport("./styles/views/quizname/quizname-view.css")
 public class AdminView extends VerticalLayout {
     private final transient CsvImporterService csvImporterService;
@@ -38,9 +38,9 @@ public class AdminView extends VerticalLayout {
     private final Select<Quiz> labelSelect = new Select<>();
     private final TextField gameNameTextField = new TextField("Name");
     private final Div gameCreationErrorContainer = new Div();
-    private TeamSortingComponent teamSortingComponent;
-    private Button createGameButton = new Button("Create Game");
-    private Button finalizeGameButton;
+    private final TeamSortingComponent teamSortingComponent = new TeamSortingComponent();
+    private Button createGameButton = new Button("Játék Hozzáadása");
+    private Button finalizeGameButton = new Button("Játék Véglegesítése");
 
 
     @Autowired
@@ -97,21 +97,17 @@ public class AdminView extends VerticalLayout {
         gameNameTextField.clear();
         gameNameTextField.focus();
         gameNameTextField.setValue(event.getValue().getName());
-        createGameButton = new Button("Create Game");
+        createGameButton = new Button("Játék Hozzáadása");
         createGameButton.addClickListener(click -> createTeamSorting(gameNameTextField.getValue(), event.getValue()));
         add(createGameButton);
     }
 
     private void createTeamSorting(String gameName, Quiz quiz) {
-        if (teamSortingComponent != null) {
-            remove(teamSortingComponent);
-        }
-        if (finalizeGameButton != null) {
-            remove(finalizeGameButton);
-        }
-        teamSortingComponent = new TeamSortingComponent(userService.getAllUsers());
+        remove(teamSortingComponent);
+        remove(finalizeGameButton);
+        teamSortingComponent.setUsers(userService.getAllUsers());
         add(teamSortingComponent);
-        finalizeGameButton = new Button("Finalize Game");
+        finalizeGameButton = new Button("Játék Véglegesítése");
         finalizeGameButton.addClickListener(e -> finalizeGame(gameName, quiz, teamSortingComponent));
         add(finalizeGameButton);
         add(gameCreationErrorContainer);
@@ -123,15 +119,15 @@ public class AdminView extends VerticalLayout {
         gameCreationErrorContainer.removeAll();
         if (teams.size() < 2) {
             gameValid = false;
-            gameCreationErrorContainer.add(new Paragraph("Cannot create a game with no teams!"));
+            gameCreationErrorContainer.add(new Paragraph("Egy csapatban legalább egy játékosnak kell lennie!"));
         }
         if (teams.stream().anyMatch(team -> team.getTeamName().isEmpty())) {
             gameValid = false;
-            gameCreationErrorContainer.add(new Paragraph("Cannot create a team with no name!"));
+            gameCreationErrorContainer.add(new Paragraph("Minden csapatot el kell nevezni!"));
         }
         if (teams.stream().anyMatch(team -> team.getTeamMembers().isEmpty())) {
             gameValid = false;
-            gameCreationErrorContainer.add(new Paragraph("Cannot create a team with no members!"));
+            gameCreationErrorContainer.add(new Paragraph("Egy játékban legalább egy csapatnak kell lennie!"));
         }
         if (gameValid) {
             gameService.createGame(gameName, quiz, teams);

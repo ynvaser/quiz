@@ -6,6 +6,6 @@ import tk.ynvaser.quiz.model.engine.Game;
 import java.util.List;
 
 @Value
-public class GamesListBroadcast implements Broadcast {
+public class GamesListBroadcast {
     List<Game> gamesList;
 }
