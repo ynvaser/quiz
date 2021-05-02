@@ -1,7 +1,9 @@
 package tk.ynvaser.quiz.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tk.ynvaser.quiz.dto.RegistrationDTO;
 import tk.ynvaser.quiz.model.users.Role;
 import tk.ynvaser.quiz.model.users.User;
 import tk.ynvaser.quiz.persistence.entity.UserEntity;
@@ -14,10 +16,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -30,6 +34,15 @@ public class UserService {
         user.setRole(role);
         UserEntity userEntity = userRepository.getOne(user.getId());
         userEntity.setRole(role);
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void registerUser(RegistrationDTO userDTO) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(userDTO.getName());
+        userEntity.setRole(Role.USER);
+        userEntity.setPasswordHash(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(userEntity);
     }
 }
